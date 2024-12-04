@@ -1,0 +1,23 @@
+# Use Node.js LTS (Long Term Support) version
+FROM node:20-slim
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies including development dependencies
+RUN npm install
+
+# Copy source code and test files
+COPY . .
+
+# Copy .env.example to .env if it doesn't exist
+COPY .env.example .env
+
+# Set NODE_ENV to test
+ENV NODE_ENV=test
+
+# Command to run tests (this can be overridden in docker-compose)
+CMD ["npm", "run", "test"]

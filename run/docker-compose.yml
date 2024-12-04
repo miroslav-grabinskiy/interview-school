@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:13
+    container_name: postgres_prod
+    environment:
+      POSTGRES_USER: your_db_username
+      POSTGRES_PASSWORD: your_db_password
+      POSTGRES_DB: local_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U your_db_username"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: ..
+      dockerfile: run/Dockerfile
+    container_name: your_app_prod
+    environment:
+      - NODE_ENV=production
+      - DB_TYPE=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=your_db_username
+      - DB_PASSWORD=your_db_password
+      - DB_NAME=local_db
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+    driver: local

@@ -1,0 +1,23 @@
+# Use Node.js LTS version
+FROM node:20-slim
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Copy .env.example to .env if it doesn't exist
+COPY .env.example .env
+
+# Build TypeScript code
+RUN npm run build
+
+# Command to run seed and start
+CMD ["npm", "run", "seed:start"]
